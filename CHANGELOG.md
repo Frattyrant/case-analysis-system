@@ -62,3 +62,15 @@
 ### Fixed
 - `case_analysis.spec`：用 `collect_all` 收集 `sqlalchemy` / `pymysql`，避免单文件 exe 启动时报 `No module named 'sqlalchemy'`；`scripts/build_exe.ps1` 在 PyInstaller 前校验依赖可导入。
 - `requirements.txt` / `requirements-build.txt`：首行注释改为 ASCII，避免简体中文注释在 GBK 默认编码下导致 `pip install -r` 解码失败，从而漏装运行依赖。
+
+## 2026-04-21
+
+### Added
+- `tests/test_upload_module.py`：覆盖 CSV 的 utf-8-sig 与 GBK 解码。
+
+### Changed
+- `app/modules/upload_module.py`：CSV 依次尝试 utf-8-sig、utf-8、gb18030、gbk、cp936；`process_files` 返回 `errors` 明细，并将 `total_files` 修正为本批文件数，补充 `frames_in_state`。
+- `app/gui/upload_panel.py`：上传结束弹窗列出失败原因（最多 10 条）；状态栏区分本批文件数与已载入表数；存在失败时用警告框提示。
+
+### Fixed
+- 修复公安业务常见「从 Excel 另存为 CSV（ANSI/GBK）」时仅按 utf-8 读取导致全部解析失败、界面只显示成功数却无原因的问题。

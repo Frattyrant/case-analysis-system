@@ -90,8 +90,27 @@ class UploadPanel(ttk.Frame):
                 persist_upload_bytes(paths, case_id, path.name, content)
 
             result = self.data_source.process_files(files_dict, state)
-            self.status_label.config(text=f"成功: {result['succeeded']}, 失败: {result['failed']}, 总计: {result['total_files']}")
-            messagebox.showinfo("完成", f"文件上传完成\n成功: {result['succeeded']}, 失败: {result['failed']}")
+            self.status_label.config(
+                text=(
+                    f"成功: {result['succeeded']}, 失败: {result['failed']}, "
+                    f"本批文件数: {result['total_files']}, 已载入表数: {result['frames_in_state']}"
+                )
+            )
+            lines = [
+                f"成功: {result['succeeded']}, 失败: {result['failed']}",
+            ]
+            err_list = result.get('errors') or []
+            if err_list:
+                lines.append("")
+                lines.extend(err_list[:10])
+                if len(err_list) > 10:
+                    lines.append(f"… 另有 {len(err_list) - 10} 条错误未显示")
+            body = "\n".join(lines)
+            title = "上传完成" if result['failed'] == 0 else "上传完成（含失败）"
+            if result['failed']:
+                messagebox.showwarning(title, body)
+            else:
+                messagebox.showinfo(title, body)
         except Exception as e:
             messagebox.showerror("错误", f"上传失败: {str(e)}")
 

@@ -47,7 +47,17 @@ class FileDataSource(DataSource):
             if filename.lower().endswith(('.xls', '.xlsx')):
                 df = pd.read_excel(file_stream, engine='openpyxl' if filename.lower().endswith('.xlsx') else 'xlrd')
             elif filename.lower().endswith('.csv'):
-                df = pd.read_csv(file_stream, encoding='utf-8-sig')
+                last_err: Exception | None = None
+                for enc in ('utf-8-sig', 'utf-8', 'gb18030', 'gbk', 'cp936'):
+                    try:
+                        df = pd.read_csv(io.BytesIO(content), encoding=enc)
+                        break
+                    except Exception as e:
+                        last_err = e
+                else:
+                    raise ValueError(
+                        f"CSV 编码无法识别（已尝试 utf-8/gb18030/gbk 等）: {last_err}"
+                    ) from last_err
             else:
                 raise ValueError(f"不支持的文件格式: {filename}")
             
@@ -82,10 +92,12 @@ class FileDataSource(DataSource):
             state: 应用状态对象
 
         Returns:
-            处理结果统计 {'succeeded': int, 'failed': int, 'total_files': int}
+            处理结果统计：succeeded、failed、total_files（本批文件数）、errors（失败明细）、
+            frames_in_state（当前案件中已载入的表格数）。
         """
         succeeded = 0
         failed = 0
+        errors: list[str] = []
 
         for filename, content in files.items():
             try:
@@ -93,11 +105,14 @@ class FileDataSource(DataSource):
                 df, matched = self.apply_schema(raw_df, filename)
                 state["uploaded_frames"][filename] = df
                 succeeded += 1
-            except Exception:
+            except Exception as e:
                 failed += 1
+                errors.append(f"{filename}: {e}")
 
         return {
             'succeeded': succeeded,
             'failed': failed,
-            'total_files': len(state["uploaded_frames"])
+            'total_files': len(files),
+            'errors': errors,
+            'frames_in_state': len(state["uploaded_frames"]),
         }
