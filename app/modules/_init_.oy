@@ -1,0 +1,27 @@
+"""
+Modules package initialization.
+"""
+from __future__ import annotations
+
+from app.modules.base import DataSource, AnalysisModule, UploadModule
+from app.modules.upload_module import FileDataSource
+from app.modules.flight_module import FlightAnalysis
+from app.modules.trajectory_module import PlateSearchAnalysis, SpatialPenetrationAnalysis
+from app.modules.rental_module import RentalAnalysis
+from app.modules.lodging_module import LodgingQueryAnalysis, CohabitAnalysis, HotelPenetrationAnalysis
+from app.modules.vehicle_module import PlateVerificationAnalysis
+
+__all__ = [
+    'DataSource',
+    'AnalysisModule',
+    'UploadModule',
+    'FileDataSource',
+    'FlightAnalysis',
+    'PlateSearchAnalysis',
+    'SpatialPenetrationAnalysis',
+    'RentalAnalysis',
+    'LodgingQueryAnalysis',
+    'CohabitAnalysis',
+    'HotelPenetrationAnalysis',
+    'PlateVerificationAnalysis',
+]
