@@ -75,3 +75,18 @@
 ### Fixed
 - 修复公安业务常见「从 Excel 另存为 CSV（ANSI/GBK）」时仅按 utf-8 读取导致全部解析失败、界面只显示成功数却无原因的问题。
 - `.xls`：支持「实为 xlsx 的 ZIP」与「HTML 表格伪 .xls」（`xlrd` 失败时回退 `read_html`+`lxml`）；`apply_schema` 在列数多于模板时截取前 N 列以兼容多出序号列等导出；新增运行依赖 `lxml`，`case_analysis.spec` 中一并收集进 exe。
+
+## 2026-04-22
+
+### Added
+- `requirements.txt`：`cpca`、`airportsdata`，供航班地理匹配；`case_analysis.spec` 增加对 `cpca` 的打包收集。
+- 上传结果返回 `per_file_rows`，弹窗与状态栏列出本批每个成功导入表的行数。
+
+### Changed
+- `app/gui/main_window.py` + `case_info_panel.py`：分析执行前 `flush_case_info_to_state()`，将画像/租赁/车辆等从界面写回 `AppState`，避免未点「完成」导致仍用空画像或旧值。
+- `app/modules/flight_module.py`：`到达地` 同时支持 IATA 与中文地名解析省份；案发省解析失败时回退为不按省筛选并提示；身份证号列归一化；无结果时设置 `last_diag` 说明原因。
+- `app/modules/rental_module.py`：无匹配时 `last_diag` 说明时间窗与筛选条件。
+- `app/gui/analysis_panel.py`：结果为空时弹窗附带模块 `last_diag` 说明。
+
+### Fixed
+- 航班分析在缺少 `cpca` 时 `target_provinces` 为空导致「到达地」全部不匹配、结果恒为空的问题（改为解析失败时暂不按省过滤并提示安装依赖）。

@@ -150,6 +150,7 @@ class AnalysisPanel(ttk.Frame):
         **kwargs
     ) -> None:
         """统一异步执行模块并驱动进度条。"""
+        self.main_window.flush_case_info_to_state()
         driver = self._get_driver(group)
         module.set_progress_driver(driver)
         case_id = str(getattr(state, 'case_id', 'global'))
@@ -169,7 +170,8 @@ class AnalysisPanel(ttk.Frame):
             future=future,
             driver=driver,
             success_msg=success_msg,
-            empty_msg=empty_msg
+            empty_msg=empty_msg,
+            module=module,
         )
 
     def _poll_task(
@@ -177,12 +179,16 @@ class AnalysisPanel(ttk.Frame):
         future: Future,
         driver: LoadingDriver,
         success_msg: str,
-        empty_msg: str
+        empty_msg: str,
+        module: object | None = None,
     ) -> None:
         """轮询后台任务，保持 UI 不阻塞。"""
         driver.drain()
         if not future.done():
-            self.after(120, lambda: self._poll_task(future, driver, success_msg, empty_msg))
+            self.after(
+                120,
+                lambda: self._poll_task(future, driver, success_msg, empty_msg, module),
+            )
             return
         try:
             result = future.result()
@@ -195,7 +201,9 @@ class AnalysisPanel(ttk.Frame):
         if not result.empty:
             messagebox.showinfo("完成", success_msg.format(count=len(result)))
         else:
-            messagebox.showinfo("完成", empty_msg)
+            diag = getattr(module, "last_diag", "") or ""
+            body = empty_msg if not diag else f"{empty_msg}\n\n说明：{diag}"
+            messagebox.showinfo("完成", body)
 
     def _on_flight_analysis(self) -> None:
         """执行航班分析。"""

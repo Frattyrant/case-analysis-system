@@ -10,6 +10,9 @@ from app.modules.base import AnalysisModule
 class RentalAnalysis(AnalysisModule):
     """租赁全库分析模块。"""
 
+    def __init__(self) -> None:
+        self.last_diag = ""
+
     def run(self, state: Any) -> pd.DataFrame:
         """执行租赁分析。
 
@@ -19,6 +22,7 @@ class RentalAnalysis(AnalysisModule):
         Returns:
             符合条件的租车名单 DataFrame
         """
+        self.last_diag = ""
         progress = self._progress()
         progress.step(10, '租赁分析：读取数据')
 
@@ -31,7 +35,12 @@ class RentalAnalysis(AnalysisModule):
             pd.DataFrame()
         )
 
-        if not state['case_points'] or df_rental.empty:
+        if not state['case_points']:
+            self.last_diag = '请先在「案件信息」中「确认添加」案发日期与地点。'
+            progress.error('租赁分析：缺少前置数据')
+            return pd.DataFrame()
+        if df_rental.empty:
+            self.last_diag = '未找到文件名包含「租赁」的已上传表。'
             progress.error('租赁分析：缺少前置数据')
             return pd.DataFrame()
 
@@ -53,6 +62,11 @@ class RentalAnalysis(AnalysisModule):
         df_confirmed = df_rental[mask].copy()
 
         if df_confirmed.empty:
+            self.last_diag = (
+                '无租赁记录同时满足：起租≤首案日、停租≥末案日'
+                + ('，且租赁公司/品牌筛选' if (state['rental_company'] or state['car_brand']) else '')
+                + '。可适当放宽「租赁公司」「车辆品牌」或核对案发时间范围。'
+            )
             progress.finish('租赁分析：无匹配记录')
             return pd.DataFrame()
 

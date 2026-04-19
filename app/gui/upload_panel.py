@@ -99,6 +99,12 @@ class UploadPanel(ttk.Frame):
             lines = [
                 f"成功: {result['succeeded']}, 失败: {result['failed']}",
             ]
+            rows_map = result.get("per_file_rows") or {}
+            if rows_map:
+                lines.append("")
+                lines.append("本批已载入各表行数：")
+                for fn in sorted(rows_map.keys()):
+                    lines.append(f"  • {fn}: {rows_map[fn]} 行")
             err_list = result.get('errors') or []
             if err_list:
                 lines.append("")

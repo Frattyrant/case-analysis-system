@@ -1,4 +1,4 @@
-"""案件基础信息录入（交互对齐 Colab demo 的 CaseInfoUI：逐条添加案发点、下拉画像、完成/清空）。"""
+"""案件基础信息录入"""
 
 from __future__ import annotations
 
@@ -158,6 +158,16 @@ class CaseInfoPanel(ttk.Frame):
         state["profile_region"] = self._region_var.get().strip()
         state["rental_company"] = self._rental_var.get().strip()
         state["car_brand"] = self._brand_var.get().strip()
+
+    def flush_to_state(self) -> None:
+        """将当前界面上的画像/租赁/车辆字段写回 AppState（分析前调用，避免未点「完成」导致仍用旧值）。"""
+        case_id = self.main_window.get_current_case_id()
+        if not case_id:
+            return
+        try:
+            self._sync_profile_to_state(case_id)
+        except KeyError:
+            pass
 
     def _on_complete(self) -> None:
         case_id = self._require_case_id()

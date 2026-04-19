@@ -19,7 +19,7 @@ _hiddenimports: list = [
     "openpyxl",
     "xlrd",
 ]
-for _pkg in ("sqlalchemy", "pymysql", "lxml"):
+for _pkg in ("sqlalchemy", "pymysql", "lxml", "cpca"):
     _d, _b, _h = collect_all(_pkg)
     _datas += _d
     _binaries += _b

@@ -168,3 +168,7 @@ class MainWindow(tk.Tk):
     def get_current_case_id(self) -> str:
         """获取当前案件ID。"""
         return self.case_combobox.get()
+
+    def flush_case_info_to_state(self) -> None:
+        """把「案件信息」页当前输入同步到内存状态，供各分析模块读取。"""
+        self.case_info_panel.flush_to_state()

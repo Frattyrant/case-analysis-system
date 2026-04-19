@@ -157,12 +157,14 @@ class FileDataSource(DataSource):
         succeeded = 0
         failed = 0
         errors: list[str] = []
+        per_file_rows: dict[str, int] = {}
 
         for filename, content in files.items():
             try:
                 raw_df = self.load(content, filename)
                 df, matched = self.apply_schema(raw_df, filename)
                 state["uploaded_frames"][filename] = df
+                per_file_rows[filename] = len(df)
                 succeeded += 1
             except Exception as e:
                 failed += 1
@@ -174,4 +176,5 @@ class FileDataSource(DataSource):
             'total_files': len(files),
             'errors': errors,
             'frames_in_state': len(state["uploaded_frames"]),
+            'per_file_rows': per_file_rows,
         }
