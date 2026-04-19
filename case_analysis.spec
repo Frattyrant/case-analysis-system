@@ -19,7 +19,7 @@ _hiddenimports: list = [
     "openpyxl",
     "xlrd",
 ]
-for _pkg in ("sqlalchemy", "pymysql"):
+for _pkg in ("sqlalchemy", "pymysql", "lxml"):
     _d, _b, _h = collect_all(_pkg)
     _datas += _d
     _binaries += _b
@@ -50,7 +50,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name="case_analysis",
+    name="案件辅助查询系统",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

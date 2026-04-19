@@ -8,6 +8,11 @@ import pandas as pd
 from app.modules.base import DataSource
 
 
+def _is_ooxml_zip(content: bytes) -> bool:
+    """是否为 Office Open XML（.xlsx 内核）；部分系统误用 .xls 扩展名。"""
+    return len(content) >= 2 and content[:2] == b"PK"
+
+
 class FileDataSource(DataSource):
     """文件数据源，提供 Excel/CSV 文件的加载和 Schema 映射功能。"""
 
@@ -42,11 +47,12 @@ class FileDataSource(DataSource):
             ValueError: 如果文件格式不支持或解析失败
         """
         try:
-            file_stream = io.BytesIO(content)
-            
-            if filename.lower().endswith(('.xls', '.xlsx')):
-                df = pd.read_excel(file_stream, engine='openpyxl' if filename.lower().endswith('.xlsx') else 'xlrd')
-            elif filename.lower().endswith('.csv'):
+            lower = filename.lower()
+            if lower.endswith(".xlsx"):
+                df = pd.read_excel(io.BytesIO(content), engine="openpyxl")
+            elif lower.endswith(".xls"):
+                df = self._load_xls(content, filename)
+            elif lower.endswith(".csv"):
                 last_err: Exception | None = None
                 for enc in ('utf-8-sig', 'utf-8', 'gb18030', 'gbk', 'cp936'):
                     try:
@@ -65,6 +71,54 @@ class FileDataSource(DataSource):
         except Exception as e:
             raise ValueError(f"解析文件 {filename} 失败: {str(e)}") from e
 
+    def _load_xls_as_html(self, content: bytes, filename: str) -> pd.DataFrame:
+        """公安/政务系统常见：扩展名为 .xls，实为 HTML/XML 表格。"""
+        last: Exception | None = None
+        for enc in ("gb18030", "gbk", "utf-8-sig", "utf-8", "cp936"):
+            try:
+                text = content.decode(enc)
+            except UnicodeDecodeError as e:
+                last = e
+                continue
+            stripped = text.lstrip("\ufeff").lstrip()
+            low = stripped[:8000].lower()
+            if "<table" not in low and "<html" not in low:
+                continue
+            try:
+                tables = pd.read_html(
+                    io.StringIO(text),
+                    displayed_only=False,
+                    flavor="lxml",
+                )
+            except ImportError as e:
+                raise ValueError(
+                    "解析 HTML 型 .xls 需要安装 lxml：pip install lxml"
+                ) from e
+            except Exception as e:
+                last = e
+                continue
+            if not tables:
+                continue
+            return max(tables, key=lambda d: d.shape[0] * max(d.shape[1], 1))
+        if last:
+            raise ValueError(f"按 HTML 表格解析 {filename} 失败: {last}") from last
+        raise ValueError(
+            f"{filename} 不是 xlrd 可读的二进制 .xls，也未检测到 HTML 表格内容"
+        )
+
+    def _load_xls(self, content: bytes, filename: str) -> pd.DataFrame:
+        if _is_ooxml_zip(content):
+            return pd.read_excel(io.BytesIO(content), engine="openpyxl")
+        try:
+            return pd.read_excel(io.BytesIO(content), engine="xlrd")
+        except Exception as e_xlrd:
+            try:
+                return self._load_xls_as_html(content, filename)
+            except Exception as e_html:
+                raise ValueError(
+                    f".xls 读取失败（已尝试二进制表与 HTML 表）：xlrd: {e_xlrd}; html: {e_html}"
+                ) from e_html
+
     def apply_schema(self, df: pd.DataFrame, filename: str) -> tuple[pd.DataFrame, bool]:
         """应用 Schema 映射到 DataFrame。
 
@@ -78,6 +132,11 @@ class FileDataSource(DataSource):
         for key, cols in self._SCHEMAS.items():
             if key in filename:
                 result = df.copy()
+                n = len(cols)
+                if len(result.columns) > n:
+                    result = result.iloc[:, :n].copy()
+                elif len(result.columns) < n:
+                    return df, False
                 result.columns = cols
                 if key in self._KEEP_COLUMNS:
                     result = result[self._KEEP_COLUMNS[key]]

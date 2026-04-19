@@ -46,7 +46,7 @@
 - `app/gui/setting_windows.py`：路径浏览统一使用 `from tkinter import filedialog`。
 - `app/gui/result_panel.py`：移除未使用的 `Path` 导入。
 
-## 2026-04-20
+## 2026-04-19
 
 ### Added
 - `app/gui/case_info_panel.py`：「案件信息」标签页；`app/utils/case_points_text.py` 与 `tests/test_case_points_text.py`。
@@ -63,7 +63,7 @@
 - `case_analysis.spec`：用 `collect_all` 收集 `sqlalchemy` / `pymysql`，避免单文件 exe 启动时报 `No module named 'sqlalchemy'`；`scripts/build_exe.ps1` 在 PyInstaller 前校验依赖可导入。
 - `requirements.txt` / `requirements-build.txt`：首行注释改为 ASCII，避免简体中文注释在 GBK 默认编码下导致 `pip install -r` 解码失败，从而漏装运行依赖。
 
-## 2026-04-21
+## 2026-04-19
 
 ### Added
 - `tests/test_upload_module.py`：覆盖 CSV 的 utf-8-sig 与 GBK 解码。
@@ -74,3 +74,4 @@
 
 ### Fixed
 - 修复公安业务常见「从 Excel 另存为 CSV（ANSI/GBK）」时仅按 utf-8 读取导致全部解析失败、界面只显示成功数却无原因的问题。
+- `.xls`：支持「实为 xlsx 的 ZIP」与「HTML 表格伪 .xls」（`xlrd` 失败时回退 `read_html`+`lxml`）；`apply_schema` 在列数多于模板时截取前 N 列以兼容多出序号列等导出；新增运行依赖 `lxml`，`case_analysis.spec` 中一并收集进 exe。
