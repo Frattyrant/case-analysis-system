@@ -45,3 +45,19 @@
 - `app/gui/main_window.py`：新建案件对话框改为模态（`transient` / `grab_set`），移除未接入业务逻辑的「描述」输入。
 - `app/gui/setting_windows.py`：路径浏览统一使用 `from tkinter import filedialog`。
 - `app/gui/result_panel.py`：移除未使用的 `Path` 导入。
+
+### Added
+- `app/gui/case_info_panel.py`：「案件信息」标签页，维护 `case_points`（多行文本）、`profile_gender`、`profile_region`、`rental_company`、`car_brand` 并写入当前案件 `AppState`。
+- `app/utils/case_points_text.py`：案发记录文本解析与格式化。
+- `tests/test_case_points_text.py`：案发记录文本解析单测。
+- `launcher.py`：统一入口，供 PyInstaller 打包。
+- `case_analysis.spec`、`scripts/build_exe.ps1`、`requirements-build.txt`、`requirements.txt`：Windows 单文件 exe 构建与运行依赖清单。
+
+### Changed
+- `app/gui/main_window.py`：主笔记本增加「案件信息」页；新建案件后自动刷新各面板。
+- `app/gui/result_panel.py`：类文档说明分析结果以 CSV 导出为主、与后续入库扩展的边界。
+- `app/core/database.py`：模块文档补充持久化分层与后续 MySQL 接入建议。
+- `README.md`：运行方式、持久化分层说明、exe 打包步骤。
+
+### Fixed
+- 无。

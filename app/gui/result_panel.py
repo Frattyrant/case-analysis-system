@@ -14,7 +14,12 @@ if TYPE_CHECKING:
 
 
 class ResultPanel(ttk.Frame):
-    """结果查看面板。"""
+    """结果查看面板。
+
+    分析结果以内存 ``AppState`` 中的 DataFrame 为准，本面板仅提供表格预览与用户主动
+    「导出 CSV」；不落库。后续若接入 MySQL，宜在 ``app.repo`` 增加写入服务，与 GUI
+    导出并存，而非改写本面板的导出语义。
+    """
 
     def __init__(self, parent: ttk.Frame, main_window: 'MainWindow'):
         """

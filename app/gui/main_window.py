@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import ttk, messagebox
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from app.config_manager import ConfigManager
@@ -10,6 +9,7 @@ from app.core.state_manager import StateManager
 
 if TYPE_CHECKING:
     from app.gui.upload_panel import UploadPanel
+    from app.gui.case_info_panel import CaseInfoPanel
     from app.gui.analysis_panel import AnalysisPanel
     from app.gui.result_panel import ResultPanel
 
@@ -73,14 +73,17 @@ class MainWindow(tk.Tk):
         self.notebook.pack(fill='both', expand=True, padx=10, pady=5)
 
         from app.gui.upload_panel import UploadPanel
+        from app.gui.case_info_panel import CaseInfoPanel
         from app.gui.analysis_panel import AnalysisPanel
         from app.gui.result_panel import ResultPanel
 
         self.upload_panel = UploadPanel(self.notebook, self)
+        self.case_info_panel = CaseInfoPanel(self.notebook, self)
         self.analysis_panel = AnalysisPanel(self.notebook, self)
         self.result_panel = ResultPanel(self.notebook, self)
 
         self.notebook.add(self.upload_panel, text="文件上传")
+        self.notebook.add(self.case_info_panel, text="案件信息")
         self.notebook.add(self.analysis_panel, text="分析功能")
         self.notebook.add(self.result_panel, text="结果查看")
 
@@ -130,6 +133,7 @@ class MainWindow(tk.Tk):
             StateManager.create(case_id)
             self._refresh_case_list()
             self.case_combobox.set(case_id)
+            self._refresh_panels()
             dialog.destroy()
 
         button_frame = ttk.Frame(dialog)
@@ -157,6 +161,7 @@ class MainWindow(tk.Tk):
     def _refresh_panels(self) -> None:
         """刷新所有面板。"""
         self.upload_panel.refresh()
+        self.case_info_panel.refresh()
         self.analysis_panel.refresh()
         self.result_panel.refresh()
 

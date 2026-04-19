@@ -1,7 +1,13 @@
 # app/core/database.py
 """
-MySQL 数据库连接管理。
+MySQL 数据库连接管理（SQLAlchemy 2.x + PyMySQL）。
 对外暴露：engine、SessionLocal、Base、init_db()
+
+持久化边界（与业务分析解耦）：
+  - 运行时分析结果默认在 ``AppState`` 内存中，GUI 侧通过 CSV 导出落盘（见 ``ResultPanel``）。
+  - ORM / ``app.repo`` 用于任务、上传记录等表结构；后续将「分析结果快照」写入 MySQL 时，
+    建议新增专用 Repository 与 Service，在 ``TaskManager`` 回调或显式「归档」动作中调用，
+    避免在 GUI 控件内直接写 SQL。
 """
 from __future__ import annotations
 
