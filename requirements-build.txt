@@ -1,2 +1,2 @@
-# 仅用于本地构建 exe，运行应用不必安装
+# Build-only: PyInstaller (not needed to run the app from source).
 pyinstaller>=6.0,<7

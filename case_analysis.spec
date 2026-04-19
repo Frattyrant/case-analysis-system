@@ -6,23 +6,31 @@
 
 from pathlib import Path
 
+from PyInstaller.utils.hooks import collect_all
+
 _spec_dir = Path(SPECPATH)  # type: ignore[name-defined]
 
 block_cipher = None
 
-hiddenimports = [
-    "pymysql",
-    "sqlalchemy.dialects.mysql.pymysql",
+# SQLAlchemy 子模块较多，仅靠静态分析容易漏包，frozen 后会出现 No module named 'sqlalchemy'。
+_datas: list = []
+_binaries: list = []
+_hiddenimports: list = [
     "openpyxl",
     "xlrd",
 ]
+for _pkg in ("sqlalchemy", "pymysql"):
+    _d, _b, _h = collect_all(_pkg)
+    _datas += _d
+    _binaries += _b
+    _hiddenimports += _h
 
 a = Analysis(
     ["launcher.py"],
     pathex=[str(_spec_dir)],
-    binaries=[],
-    datas=[],
-    hiddenimports=hiddenimports,
+    binaries=_binaries,
+    datas=_datas,
+    hiddenimports=_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

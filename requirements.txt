@@ -1,4 +1,4 @@
-# 运行与打包前建议完整安装（含 MySQL 驱动，供 SQLAlchemy 使用）
+# Runtime deps (pandas, SQLAlchemy, PyMySQL, Excel readers, dotenv).
 pandas>=2.0
 sqlalchemy>=2.0
 pymysql>=1.1

@@ -60,4 +60,5 @@
 - `README.md`：运行方式、持久化、打包与测试；补充项目现状与缺口、目录职责表、面向界面同学的协作说明。
 
 ### Fixed
-- 无。
+- `case_analysis.spec`：用 `collect_all` 收集 `sqlalchemy` / `pymysql`，避免单文件 exe 启动时报 `No module named 'sqlalchemy'`；`scripts/build_exe.ps1` 在 PyInstaller 前校验依赖可导入。
+- `requirements.txt` / `requirements-build.txt`：首行注释改为 ASCII，避免简体中文注释在 GBK 默认编码下导致 `pip install -r` 解码失败，从而漏装运行依赖。

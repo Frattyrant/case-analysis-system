@@ -8,6 +8,8 @@ if (Test-Path "requirements.txt") {
     python -m pip install -r requirements.txt -q
 }
 python -m pip install -r requirements-build.txt -q
+# 打包环境必须能 import 运行依赖，否则 PyInstaller 无法把 sqlalchemy 等打进 exe
+python -c "import sqlalchemy, pymysql; print('deps ok:', sqlalchemy.__version__)"
 python -m PyInstaller case_analysis.spec --noconfirm
 
 Write-Host "输出: dist\case_analysis.exe"
