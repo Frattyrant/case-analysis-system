@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -105,19 +105,19 @@ class SettingsWindow(tk.Toplevel):
         ttk.Button(parent, text="浏览...", command=self._browse_sample_path).grid(row=2, column=2, padx=5, pady=5)
 
     def _browse_raw_path(self) -> None:
-        path = tk.filedialog.askdirectory(title="选择原始上传目录 (raw)")
+        path = filedialog.askdirectory(title="选择原始上传目录 (raw)")
         if path:
             self.raw_path_entry.delete(0, tk.END)
             self.raw_path_entry.insert(0, path)
 
     def _browse_cache_path(self) -> None:
-        path = tk.filedialog.askdirectory(title="选择分析缓存目录 (cache)")
+        path = filedialog.askdirectory(title="选择分析缓存目录 (cache)")
         if path:
             self.cache_path_entry.delete(0, tk.END)
             self.cache_path_entry.insert(0, path)
 
     def _browse_sample_path(self) -> None:
-        path = tk.filedialog.askdirectory(title="选择测试样本目录 (sample)")
+        path = filedialog.askdirectory(title="选择测试样本目录 (sample)")
         if path:
             self.sample_path_entry.delete(0, tk.END)
             self.sample_path_entry.insert(0, path)

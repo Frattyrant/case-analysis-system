@@ -6,7 +6,6 @@
   2. 初始化数据库连接
   3. 启动主窗口
 """
-import tkinter as tk
 from pathlib import Path
 import sys
 
@@ -68,16 +67,11 @@ def main() -> None:
     except Exception as e:
         logger.error("数据库初始化失败: %s", e)
 
-    # 4. 启动 Tkinter 应用
-    root = tk.Tk()
-    root.title("案件侦查数据分析系统")
-    root.geometry("1200x800")
-
+    # 4. 启动 Tkinter 应用（MainWindow 自身即为根 Tk，避免重复创建根窗口）
     from app.gui.main_window import MainWindow
-    window = MainWindow(root, config_manager)
-    window.pack(fill='both', expand=True)
 
-    root.mainloop()
+    window = MainWindow(config_manager)
+    window.mainloop()
 
 
 if __name__ == "__main__":

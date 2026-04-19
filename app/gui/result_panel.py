@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -44,14 +43,18 @@ class ResultPanel(ttk.Frame):
 
         ttk.Button(control_frame, text="导出CSV", command=self._on_export, width=12).pack(side='right', padx=5)
 
-        self.tree = ttk.Treeview(self)
-        self.tree.pack(fill='both', expand=True, padx=10, pady=5)
+        tree_frame = ttk.Frame(self)
+        tree_frame.pack(fill='both', expand=True, padx=10, pady=5)
+        tree_frame.grid_rowconfigure(0, weight=1)
+        tree_frame.grid_columnconfigure(0, weight=1)
 
-        scrollbar_y = ttk.Scrollbar(self.tree, orient='vertical', command=self.tree.yview)
-        scrollbar_x = ttk.Scrollbar(self.tree, orient='horizontal', command=self.tree.xview)
+        self.tree = ttk.Treeview(tree_frame)
+        scrollbar_y = ttk.Scrollbar(tree_frame, orient='vertical', command=self.tree.yview)
+        scrollbar_x = ttk.Scrollbar(tree_frame, orient='horizontal', command=self.tree.xview)
         self.tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
-        scrollbar_y.pack(side='right', fill='y')
-        scrollbar_x.pack(side='bottom', fill='x')
+        self.tree.grid(row=0, column=0, sticky='nsew')
+        scrollbar_y.grid(row=0, column=1, sticky='ns')
+        scrollbar_x.grid(row=1, column=0, sticky='ew')
 
         page_frame = ttk.Frame(self)
         page_frame.pack(fill='x', padx=10, pady=5)
@@ -77,12 +80,15 @@ class ResultPanel(ttk.Frame):
 
         try:
             state = StateManager.get(case_id)
-            if result_type == 'matched_trajectories':
-                df = state.get('matched_trajectories', pd.DataFrame())
-            elif result_type == 'df_real_car':
-                df = state.get('df_real_car', pd.DataFrame())
-            elif result_type == 'current_lodging_res':
-                df = state.get('current_lodging_res', pd.DataFrame())
+            # AppState 使用 __getitem__，无 dict 风格 .get()
+            if result_type in (
+                'matched_trajectories',
+                'df_real_car',
+                'current_lodging_res',
+            ):
+                df = state[result_type]
+                if not isinstance(df, pd.DataFrame):
+                    df = pd.DataFrame()
             else:
                 df = pd.DataFrame()
 

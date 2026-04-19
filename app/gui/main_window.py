@@ -109,16 +109,14 @@ class MainWindow(tk.Tk):
         """新建案件。"""
         dialog = tk.Toplevel(self)
         dialog.title("新建案件")
-        dialog.geometry("400x200")
+        dialog.geometry("400x150")
         dialog.resizable(False, False)
+        dialog.transient(self)
+        dialog.grab_set()
 
         ttk.Label(dialog, text="案件ID:").grid(row=0, column=0, padx=10, pady=10, sticky='w')
         case_id_entry = ttk.Entry(dialog, width=30)
         case_id_entry.grid(row=0, column=1, padx=10, pady=10)
-
-        ttk.Label(dialog, text="描述:").grid(row=1, column=0, padx=10, pady=10, sticky='w')
-        desc_entry = ttk.Entry(dialog, width=30)
-        desc_entry.grid(row=1, column=1, padx=10, pady=10)
 
         def on_ok():
             case_id = case_id_entry.get().strip()
@@ -135,7 +133,7 @@ class MainWindow(tk.Tk):
             dialog.destroy()
 
         button_frame = ttk.Frame(dialog)
-        button_frame.grid(row=2, column=0, columnspan=2, pady=20)
+        button_frame.grid(row=1, column=0, columnspan=2, pady=20)
         ttk.Button(button_frame, text="确定", command=on_ok, width=10).pack(side='left', padx=5)
         ttk.Button(button_frame, text="取消", command=dialog.destroy, width=10).pack(side='left', padx=5)
 

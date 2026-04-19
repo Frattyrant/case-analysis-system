@@ -30,7 +30,7 @@
 
 ### Changed
 - `app/config_manager.py`：默认路径改为 `data_root` / `raw_dir` / `cache_dir` / `sample_dir`，并迁移旧版 `upload_dir` / `export_dir`。
-- `app/main.py`：启动时 `ensure_data_dirs`，保证配置的数据目录存在。
+- `app/main.py`：启动时 `ensure_data_dirs`，保证配置的数据目录存在；GUI 入口改为直接 `MainWindow(config_manager).mainloop()`（与 `MainWindow` 继承 `tk.Tk` 一致）。
 - `app/gui/upload_panel.py`：增加「导入到案件」按钮；导入时同步写入 `raw/<案件ID>/`；补全 `StateManager` 引用。
 - `app/gui/result_panel.py`：导出 CSV 默认打开 `cache/<案件ID>/`。
 - `app/gui/setting_windows.py`：路径设置页改为 raw / cache / sample 三项。
@@ -38,4 +38,10 @@
 - `README.md`：补充指向 `data/README.md` 的说明。
 
 ### Fixed
-- 无（本日以数据层与异常契约为主）。
+- `app/gui/result_panel.py`：从 `AppState` 读取结果改为 `state[key]`（原 `.get()` 在 `AppState` 上不可用，会导致加载失败）；结果表格与滚动条放入独立 `Frame` 并用 `grid` 布局，避免将滚动条挂在 `Treeview` 子级导致布局异常。
+
+### Changed（同日 GUI 整理）
+- `app/gui/analysis_panel.py`：抽取 `_require_case_id()`，统一「未选案件」提示与早退逻辑。
+- `app/gui/main_window.py`：新建案件对话框改为模态（`transient` / `grab_set`），移除未接入业务逻辑的「描述」输入。
+- `app/gui/setting_windows.py`：路径浏览统一使用 `from tkinter import filedialog`。
+- `app/gui/result_panel.py`：移除未使用的 `Path` 导入。

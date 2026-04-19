@@ -133,6 +133,13 @@ class AnalysisPanel(ttk.Frame):
         ui['status'].set('准备执行...')
         return LoadingDriver(ui['bar'], ui['status'], max_steps=100)
 
+    def _require_case_id(self) -> str | None:
+        case_id = self.main_window.get_current_case_id()
+        if not case_id:
+            messagebox.showwarning("警告", "请先创建案件")
+            return None
+        return case_id
+
     def _run_module_with_progress(
         self,
         group: str,
@@ -192,9 +199,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_flight_analysis(self) -> None:
         """执行航班分析。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         try:
@@ -212,9 +218,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_plate_search(self) -> None:
         """执行车牌搜索。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         pattern = self.plate_entry.get().strip()
@@ -238,9 +243,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_spatial_analysis(self) -> None:
         """执行时空分析。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         try:
@@ -258,9 +262,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_rental_analysis(self) -> None:
         """执行租赁分析。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         try:
@@ -278,9 +281,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_lodging_query(self) -> None:
         """执行住宿查询。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         id_val = self.id_entry.get().strip()
@@ -307,9 +309,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_cohabit_analysis(self) -> None:
         """执行同住分析。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         try:
@@ -327,9 +328,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_hotel_penetration(self) -> None:
         """执行住宿渗透分析。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         try:
@@ -347,9 +347,8 @@ class AnalysisPanel(ttk.Frame):
 
     def _on_plate_verification(self) -> None:
         """执行车辆真伪核查。"""
-        case_id = self.main_window.get_current_case_id()
+        case_id = self._require_case_id()
         if not case_id:
-            messagebox.showwarning("警告", "请先创建案件")
             return
 
         plate = self.vehicle_plate_entry.get().strip()
