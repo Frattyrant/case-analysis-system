@@ -68,6 +68,7 @@ class FlightAnalysis(AnalysisModule):
         )
 
         if not state["case_points"] or df_raw is None:
+            state["flight_suspect_cross"] = pd.DataFrame()
             if not state["case_points"]:
                 self.last_diag = (
                     "请先在「案件信息」中填写案发地点与日期，并点击「确认添加」保存至少一条记录。"
@@ -101,6 +102,7 @@ class FlightAnalysis(AnalysisModule):
         need_cols = {"航班日期", "身份证号", "到达地", "姓名", "航班号"}
         missing = need_cols - set(df_raw.columns)
         if missing:
+            state["flight_suspect_cross"] = pd.DataFrame()
             self.last_diag = f"航班表缺少列：{', '.join(sorted(missing))}（当前列：{list(df_raw.columns)}）"
             progress.finish("航班分析：列不齐")
             return pd.DataFrame()
@@ -112,6 +114,7 @@ class FlightAnalysis(AnalysisModule):
         df_raw = df_raw.dropna(subset=["航班日期", "身份证号"])
         df_raw = df_raw[df_raw["身份证号"].astype(str).str.len() >= 15]
         if df_raw.empty:
+            state["flight_suspect_cross"] = pd.DataFrame()
             self.last_diag = (
                 f"有效航班记录为 0 行（解析前约 {n_before} 行）。"
                 "请检查「航班日期」是否为可识别日期，以及「身份证号」是否完整。"
@@ -174,6 +177,9 @@ class FlightAnalysis(AnalysisModule):
                 (self.last_diag + "\n" if self.last_diag else "")
                 + "进入侧与离开侧均有记录，但「姓名+身份证号」无交集，请核对数据是否为同人。"
             )
+
+        # 供租赁模块：按嫌疑人「进入」案发区域航班的日期约束起租时间
+        state["flight_suspect_cross"] = df_t3.copy()
 
         progress.finish("航班分析：完成")
         return df_t3

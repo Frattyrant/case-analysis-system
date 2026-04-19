@@ -41,6 +41,9 @@ def _register_slots() -> None:
         SlotSpec('matched_plates',              list,           '模糊搜索出的车牌号'),
         SlotSpec('matched_trajectories',        pd.DataFrame,   '车牌对应详细轨迹记录'),
 
+        # 航班碰撞结果（供租赁等模块按「抵达时间」约束起租）
+        SlotSpec('flight_suspect_cross',        pd.DataFrame,   '航班进入×离开交叉嫌疑人表'),
+
         # 租赁模块
         SlotSpec('df_real_car',                 pd.DataFrame,   '租赁全库匹配正式名单'),
         SlotSpec('rental_trajectory_suspects',  list,           '租赁期内有轨迹记录的租车人姓名'),

@@ -28,6 +28,7 @@ def _register_test_slots() -> None:
         SlotSpec('car_brand', str),
         SlotSpec('matched_plates', list),
         SlotSpec('matched_trajectories', pd.DataFrame),
+        SlotSpec('flight_suspect_cross', pd.DataFrame),
         SlotSpec('df_real_car', pd.DataFrame),
         SlotSpec('rental_trajectory_suspects', list),
         SlotSpec('current_lodging_res', pd.DataFrame),
@@ -121,6 +122,32 @@ class TestModulesPipeline(unittest.TestCase):
         result = module.run(self.state)
         self.assertEqual(len(result), 1)
         self.assertIn('姓名', result.columns)
+
+    def test_rental_uses_flight_enter_date_when_cross_present(self) -> None:
+        """有航班碰撞表时：起租日须不晚于「航班日期_进入」，且停租≥末案日。"""
+        self.state['flight_suspect_cross'] = pd.DataFrame([
+            {
+                '姓名': '张三',
+                '身份证号': '110101199001010011',
+                '航班日期_进入': pd.Timestamp('2013-11-17'),
+                '航班日期_离开': pd.Timestamp('2013-11-19'),
+            }
+        ])
+        rental_result = RentalAnalysis().run(self.state)
+        self.assertEqual(len(rental_result), 1)
+        self.assertIn('张三', rental_result['租车人姓名'].values)
+
+    def test_rental_rejects_when_start_after_flight_enter(self) -> None:
+        self.state['flight_suspect_cross'] = pd.DataFrame([
+            {
+                '姓名': '张三',
+                '身份证号': '110101199001010011',
+                '航班日期_进入': pd.Timestamp('2013-11-14'),
+                '航班日期_离开': pd.Timestamp('2013-11-19'),
+            }
+        ])
+        rental_result = RentalAnalysis().run(self.state)
+        self.assertEqual(len(rental_result), 0)
 
 
 if __name__ == '__main__':

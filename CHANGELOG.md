@@ -76,7 +76,7 @@
 - 修复公安业务常见「从 Excel 另存为 CSV（ANSI/GBK）」时仅按 utf-8 读取导致全部解析失败、界面只显示成功数却无原因的问题。
 - `.xls`：支持「实为 xlsx 的 ZIP」与「HTML 表格伪 .xls」（`xlrd` 失败时回退 `read_html`+`lxml`）；`apply_schema` 在列数多于模板时截取前 N 列以兼容多出序号列等导出；新增运行依赖 `lxml`，`case_analysis.spec` 中一并收集进 exe。
 
-## 2026-04-22
+## 2026-04-19
 
 ### Added
 - `requirements.txt`：`cpca`、`airportsdata`，供航班地理匹配；`case_analysis.spec` 增加对 `cpca` 的打包收集。
@@ -90,3 +90,4 @@
 
 ### Fixed
 - 航班分析在缺少 `cpca` 时 `target_provinces` 为空导致「到达地」全部不匹配、结果恒为空的问题（改为解析失败时暂不按省过滤并提示安装依赖）。
+- **租赁与航班衔接**：`demo1_1 (3).py` 中租赁仅用案发 `earliest`/`latest` 卡起租；现改为在存在航班碰撞表 `flight_suspect_cross` 时，用「进入」侧 `航班日期_进入` 约束起租（按日不晚于抵达日），停租仍须 ≥ 末案日；航班分析每次结束写入/清空该表。新增 `SlotSpec('flight_suspect_cross')`。
