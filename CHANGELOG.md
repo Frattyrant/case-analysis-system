@@ -46,23 +46,18 @@
 - `app/gui/setting_windows.py`：路径浏览统一使用 `from tkinter import filedialog`。
 - `app/gui/result_panel.py`：移除未使用的 `Path` 导入。
 
+## 2026-04-20
+
 ### Added
-- `app/gui/case_info_panel.py`：「案件信息」标签页，维护 `case_points`（多行文本）、`profile_gender`、`profile_region`、`rental_company`、`car_brand` 并写入当前案件 `AppState`。
-- `app/utils/case_points_text.py`：案发记录文本解析与格式化。
-- `tests/test_case_points_text.py`：案发记录文本解析单测。
-- `launcher.py`：统一入口，供 PyInstaller 打包。
-- `case_analysis.spec`、`scripts/build_exe.ps1`、`requirements-build.txt`、`requirements.txt`：Windows 单文件 exe 构建与运行依赖清单。
+- `app/gui/case_info_panel.py`：「案件信息」标签页；`app/utils/case_points_text.py` 与 `tests/test_case_points_text.py`。
+- `launcher.py`、`case_analysis.spec`、`scripts/build_exe.ps1`、`requirements-build.txt`、`requirements.txt`：exe 构建与依赖清单。
 
 ### Changed
 - `app/gui/main_window.py`：主笔记本增加「案件信息」页；新建案件后自动刷新各面板。
+- `app/gui/case_info_panel.py`：交互对齐 `demo1_1 (3).py` 中 `CaseInfoUI`（案发城市 + 日期 + 确认添加、只读列表、画像下拉、完成 / 清空确认）。
 - `app/gui/result_panel.py`：类文档说明分析结果以 CSV 导出为主、与后续入库扩展的边界。
 - `app/core/database.py`：模块文档补充持久化分层与后续 MySQL 接入建议。
-- `README.md`：运行方式、持久化分层说明、exe 打包步骤。
+- `README.md`：运行方式、持久化、打包与测试；补充项目现状与缺口、目录职责表、面向界面同学的协作说明。
 
 ### Fixed
 - 无。
-
-## 2026-04-20
-
-### Changed
-- `app/gui/case_info_panel.py`：案件基础信息交互对齐 `demo1_1 (3).py` 中 `CaseInfoUI`：案发城市 + 日期（默认 2013-11-18）+「确认添加」逐条追加 `case_points`；只读区展示「记录 n: 地点=…, 时间=…」；性别/户籍为固定下拉项；「完成」写入画像与租赁/品牌；「清空记录」带二次确认并清空状态与控件。
