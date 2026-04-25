@@ -13,11 +13,15 @@ import sys
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from PyQt6.QtWidgets import QApplication
+
 from app.core.state_manager import StateManager, SlotSpec
 from app.core.database import init_db
 from app.utils.logger import get_logger
 from app.config_manager import ConfigManager
 from app.data_paths import ensure_data_dirs, paths_from_config
+from app.gui_qt import MainWindow
+from app.services_ import AppServices
 
 import pandas as pd 
 
@@ -70,11 +74,12 @@ def main() -> None:
     except Exception as e:
         logger.error("数据库初始化失败: %s", e)
 
-    # 4. 启动 Tkinter 应用（MainWindow 自身即为根 Tk，避免重复创建根窗口）
-    from app.gui.main_window import MainWindow
-
-    window = MainWindow(config_manager)
-    window.mainloop()
+    # 4. 启动 PyQt6 应用
+    app = QApplication(sys.argv)
+    services = AppServices(paths_from_config(config_manager))
+    window = MainWindow(services)
+    window.show()
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

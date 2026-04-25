@@ -27,18 +27,22 @@ for _d in (UPLOAD_DIR, EXPORT_DIR, LOG_DIR):
 
 
 # ─────────────────────────────────────────────
-#  数据库（MySQL）
+#  数据库（默认 SQLite，兼容 MySQL）
 # ─────────────────────────────────────────────
 class DatabaseConfig:
+    DIALECT:  str = os.getenv("DB_DIALECT", "sqlite").lower()
     HOST:     str = os.getenv("DB_HOST",     "localhost")
     PORT:     int = int(os.getenv("DB_PORT", "3306"))
     USER:     str = os.getenv("DB_USER",     "root")
     PASSWORD: str = os.getenv("DB_PASSWORD", "")
     NAME:     str = os.getenv("DB_NAME",     "case_analysis")
+    SQLITE_PATH: str = os.getenv("DB_SQLITE_PATH", str(DATA_DIR / "case_analysis.db"))
 
     # SQLAlchemy 连接串
     @classmethod
     def url(cls) -> str:
+        if cls.DIALECT == "sqlite":
+            return f"sqlite+pysqlite:///{Path(cls.SQLITE_PATH).resolve()}"
         return (
             f"mysql+pymysql://{cls.USER}:{cls.PASSWORD}"
             f"@{cls.HOST}:{cls.PORT}/{cls.NAME}"

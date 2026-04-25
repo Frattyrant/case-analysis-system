@@ -2,6 +2,18 @@
 
 本文件用于记录项目每次功能修改与修复。
 
+## 2026-04-25
+
+### Added
+- 新增 `app/gui_qt.py`：基于 PyQt6 的 MVP 桌面界面，覆盖案件管理、文件上传、分析触发与结果表格展示。
+- 新增 `app/services_.py`：最小服务层，统一封装案件状态管理、上传落盘与分析模块调用。
+
+### Changed
+- `app/main.py`：入口从 Tkinter 切换为 PyQt6，继续沿用原有 slot 注册与后端模块。
+- `app/config_db.py`：数据库配置默认改为 SQLite（保留 MySQL 兼容分支）。
+- `app/core/database.py`：按方言创建引擎，SQLite 使用 `check_same_thread=False` 并调整日志输出。
+- `requirements.txt`：移除 `pymysql`，新增 `PyQt6`，默认运行栈与本地单机架构一致。
+
 ## 2026-04-18
 
 ### Added

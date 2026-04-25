@@ -1,10 +1,10 @@
-# Runtime deps (pandas, SQLAlchemy, PyMySQL, Excel readers, dotenv).
+# Runtime deps (pandas, SQLAlchemy, SQLite, Excel readers, Qt, dotenv).
 pandas>=2.0
 sqlalchemy>=2.0
-pymysql>=1.1
 openpyxl>=3.1
 xlrd>=2.0
 lxml>=4.9
 cpca>=0.5
 airportsdata>=20240701
 python-dotenv>=1.0
+PyQt6>=6.6
