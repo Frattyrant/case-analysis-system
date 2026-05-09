@@ -90,6 +90,18 @@ class AppState:
             self[key] = value
 
     # ── 工具方法 ────────────────────────────────
+    def get(self, key: str, default: Any = None) -> Any:
+        """字典风格的 .get() 访问，不存在时返回 default。"""
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __contains__(self, key: str) -> bool:
+        """支持 'key' in state 语法。"""
+        store: dict = object.__getattribute__(self, '_store')
+        return key in store
+
     def reset(self) -> None:
         """重置当前案件的所有字段为默认值。"""
         self._init_all()

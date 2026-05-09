@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -9,6 +10,9 @@ if TYPE_CHECKING:
 
 
 def project_root() -> Path:
+    """返回应用基目录：开发时是项目根，PyInstaller 打包时是 exe 所在目录"""
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent.parent
 
 

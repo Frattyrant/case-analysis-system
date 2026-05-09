@@ -1,42 +1,21 @@
-from __future__ import annotations
-
+# app/modules/vehicle_module.py
+import pandas as pd
 from typing import Any
 
-import pandas as pd
-
-from app.modules.base import AnalysisModule
-
-
-class PlateVerificationAnalysis(AnalysisModule):
-    """车辆真伪核查模块。"""
+class PlateVerificationAnalysis:
+    """车辆真伪核查模块。
+    对比机动车登记库和租赁库判定车牌真伪，并设置假牌警告标记。
+    """
+    def __init__(self):
+        pass
 
     def run(self, state: Any, plate: str = '') -> pd.DataFrame:
-        """执行车辆真伪核查。
-
-        Args:
-            state: 应用状态对象
-            plate: 车牌号
-
-        Returns:
-            核查结果 DataFrame
-        """
-        progress = self._progress()
-        progress.step(15, '车辆核查：读取库数据')
-
-        df_vehicle = next(
-            (df for fn, df in state['uploaded_frames'].items() if '机动车' in fn),
-            pd.DataFrame()
-        )
-        df_rental = next(
-            (df for fn, df in state['uploaded_frames'].items() if '租赁' in fn),
-            pd.DataFrame()
-        )
+        df_vehicle = next((df for fn, df in state['uploaded_frames'].items() if '机动车' in fn), pd.DataFrame())
+        df_rental = next((df for fn, df in state['uploaded_frames'].items() if '租赁' in fn), pd.DataFrame())
 
         if not plate:
-            progress.error('车辆核查：车牌不能为空')
-            return pd.DataFrame()
+            raise ValueError("请输入需要核查的完整车牌号！")
 
-        progress.step(60, '车辆核查：比对备案记录')
         plate_upper = plate.upper()
         parts = []
 
@@ -58,5 +37,7 @@ class PlateVerificationAnalysis(AnalysisModule):
         combined = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
         state['current_lodging_res'] = combined
 
-        progress.finish('车辆核查：完成')
+        # 设置假牌警告标记: 两个库都查不到 → 疑似假牌
+        state['plate_verification_alert'] = combined.empty
+
         return combined

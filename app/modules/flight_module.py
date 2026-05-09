@@ -178,8 +178,20 @@ class FlightAnalysis(AnalysisModule):
                 + "进入侧与离开侧均有记录，但「姓名+身份证号」无交集，请核对数据是否为同人。"
             )
 
+        # 写入 State 供 GUI 三表视图渲染
+        state["flight_enter_candidates"] = df_t1 if not df_t1.empty else pd.DataFrame()
+        state["flight_leave_candidates"] = df_t2 if not df_t2.empty else pd.DataFrame()
         # 供租赁模块：按嫌疑人「进入」案发区域航班的日期约束起租时间
         state["flight_suspect_cross"] = df_t3.copy()
+
+        # 从交叉表提取时间窗，供 GUI 更新时间窗标签 + 租赁查询自动引用
+        if not df_t3.empty:
+            arrive_cols = [c for c in df_t3.columns if ('进入' in c or '到达' in c) and '日期' in c]
+            leave_cols = [c for c in df_t3.columns if ('离开' in c or '出发' in c) and '日期' in c]
+            if arrive_cols:
+                state["flight_earliest_arrival"] = str(df_t3[arrive_cols[0]].min())
+            if leave_cols:
+                state["flight_latest_departure"] = str(df_t3[leave_cols[0]].max())
 
         progress.finish("航班分析：完成")
         return df_t3

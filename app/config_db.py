@@ -7,15 +7,22 @@
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()  # 读取项目根目录的 .env 文件
 
 # ─────────────────────────────────────────────
-#  路径
+#  路径（兼容 PyInstaller 打包：exe 目录即根目录）
 # ─────────────────────────────────────────────
-ROOT_DIR    = Path(__file__).resolve().parent.parent   # project_root/
+def _base_dir() -> Path:
+    """返回应用基目录：开发时是项目根，PyInstaller 打包时是 exe 所在目录"""
+    if getattr(sys, 'frozen', False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parent.parent
+
+ROOT_DIR    = _base_dir()
 DATA_DIR    = ROOT_DIR / "data"
 UPLOAD_DIR  = DATA_DIR / "uploads"    # 原始上传文件，按 case_id 分子目录
 EXPORT_DIR  = DATA_DIR / "exports"    # 导出的 CSV 结果

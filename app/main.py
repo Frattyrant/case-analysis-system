@@ -43,10 +43,11 @@ def _register_slots() -> None:
 
         # 轨迹模块
         SlotSpec('matched_plates',              list,           '模糊搜索出的车牌号'),
-        SlotSpec('matched_trajectories',        pd.DataFrame,   '车牌对应详细轨迹记录'),
 
         # 航班碰撞结果（供租赁等模块按「抵达时间」约束起租）
-        SlotSpec('flight_suspect_cross',        pd.DataFrame,   '航班进入×离开交叉嫌疑人表'),
+        SlotSpec('flight_enter_candidates',  pd.DataFrame, '航班到达乘客信息（首案日前到达）'),
+        SlotSpec('flight_leave_candidates',  pd.DataFrame, '航班离开乘客信息（末案日后离开）'),
+        SlotSpec('flight_suspect_cross',     pd.DataFrame, '航班到达、离开交叉嫌疑人表'),
 
         # 租赁模块
         SlotSpec('df_real_car',                 pd.DataFrame,   '租赁全库匹配正式名单'),
@@ -54,12 +55,31 @@ def _register_slots() -> None:
 
         # 住宿 / 车辆核查模块
         SlotSpec('current_lodging_res',         pd.DataFrame,   '住宿档案或车辆核查结果'),
+
+        # ── 链式侦查流程 ──
+        # 航班 → 租车 时间窗
+        SlotSpec('flight_earliest_arrival',  str,          '航班交叉表最早到达时间'),
+        SlotSpec('flight_latest_departure',  str,          '航班交叉表最晚离开时间'),
+
+        # 租车 → 住宿 司机嫌疑人下拉框
+        SlotSpec('rental_driver_suspects',   list,         '租赁司机嫌疑人 [(姓名, 身份证号), ...]'),
+
+        # 住宿 姓名/身份证双路查询
+        SlotSpec('lodging_driver_result_by_name', pd.DataFrame, '按司机姓名查询的住宿记录'),
+        SlotSpec('lodging_driver_result_by_id',   pd.DataFrame, '按司机身份证查询的住宿记录'),
+
+        # 车辆轨迹
+        SlotSpec('plate_verification_alert', bool,         '假牌警告标记'),
     ])
 
 
 def main() -> None:
-    # 1. 初始化配置管理器
-    config_path = Path(__file__).parent.parent / 'config.json'
+    # 1. 初始化配置管理器（兼容 PyInstaller：exe 目录即根目录）
+    if getattr(sys, 'frozen', False):
+        _root = Path(sys.executable).resolve().parent
+    else:
+        _root = Path(__file__).resolve().parent.parent
+    config_path = _root / 'config.json'
     config_manager = ConfigManager(config_path)
     ensure_data_dirs(paths_from_config(config_manager))
 
