@@ -1,5 +1,5 @@
 
-基于 PyQt6 + pandas + SQLite 的桌面端侦查数据分析工具，支持多案件管理、链式侦查流程（航班→租车→住宿→同住）、团伙分析与车辆轨迹追踪。
+基于 PyQt6 + py + SQLite 的桌面端侦查数据分析工具，支持多案件管理、链式侦查流程（航班→租车→住宿→同住）、团伙分析与车辆轨迹追踪。
 
 <img width="2239" height="1299" alt="image" src="https://github.com/user-attachments/assets/dd8199f1-e37c-40e0-93ea-238d16fb5a2f" />
 
