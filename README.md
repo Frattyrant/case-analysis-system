@@ -1,7 +1,7 @@
 
 基于 PyQt6 + py + SQLite 的桌面端侦查数据分析工具，支持多案件管理、链式侦查流程（航班→租车→住宿→同住）、团伙分析与车辆轨迹追踪。
 
-<img width="2239" height="1299" alt="image" src="https://github.com/user-attachments/assets/dd8199f1-e37c-40e0-93ea-238d16fb5a2f" />
+<img width="2236" height="1278" alt="image" src="https://github.com/user-attachments/assets/41835877-d63b-4702-850d-c719f707685f" />
 
 
 ## 技术栈
@@ -36,21 +36,27 @@
 
 1. **新建案件** → 输入案件 ID/名称
 
-<img width="892" height="48" alt="image" src="https://github.com/user-attachments/assets/63a2d7da-6565-4489-bccd-de5633b79ba8" />
+<img width="916" height="47" alt="image" src="https://github.com/user-attachments/assets/472c785b-5c10-437c-994b-ae6b951f1494" />
+
 
 2. **上传数据** → 选择 .xlsx/.xls/.csv 文件（文件名含"航班""租赁""旅店""轨迹""机动车"等关键字）
 
-<img width="325" height="89" alt="image" src="https://github.com/user-attachments/assets/82bb1548-7aea-4f29-8cbf-6474e6bc5dae" />
+<img width="288" height="57" alt="image" src="https://github.com/user-attachments/assets/90d8ece1-f43a-477c-9fef-c279904ea724" />
+
 
 3. **录入案发信息** → 添加案发日期与城市，录入嫌疑人画像（性别/户籍/车辆品牌/车辆公司等），并点击同步到此案件
 
-<img width="2221" height="467" alt="image" src="https://github.com/user-attachments/assets/033c46d4-ebf4-4a54-a25d-49ab37f6537f" />
+<img width="1108" height="211" alt="image" src="https://github.com/user-attachments/assets/bca1dad5-1a62-4128-bad8-58b94dc25a50" />
+
 
 4. **执行查询流程** → 按主界面查询模块任意进行，结果以新TAB呈现，支持分页浏览、列排序、导出、复制文本等
 
-<img width="2195" height="597" alt="image" src="https://github.com/user-attachments/assets/db54ebba-7b9b-4546-8976-fa8129d60c75" />
+<img width="1120" height="334" alt="image" src="https://github.com/user-attachments/assets/7fcf43b7-bb82-47e0-b023-209a43d6c60d" />
+
 
 5. **导出结果** → 支持 CSV / Excel 单表导出或一键全导出
+<img width="402" height="94" alt="image" src="https://github.com/user-attachments/assets/58dde52d-5a4d-4e41-a9a6-80ae8ff95860" />
+
 
 ## 项目结构
 
